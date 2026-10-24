@@ -1,17 +1,14 @@
 # Dependencies
 node_modules/
-*/node_modules/
-*/*/node_modules/
+**/node_modules/
 .pnp
 .pnp.js
 
 # Production / Build
 dist/
 build/
-*/dist/
-*/build/
-*/*/dist/
-*/*/build/
+**/dist/
+**/build/
 
 # OS Files
 .DS_Store
