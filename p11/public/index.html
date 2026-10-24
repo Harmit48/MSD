@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 11 · Blog System · JWT &amp; RBAC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">P11</div>
+        <div>
+          <div class="brand-title">MERN Stack Development</div>
+          <div class="brand-sub">Ganpat University · M.Sc [CA &amp; IT]</div>
+        </div>
+      </div>
+      <div class="student-chip">
+        <div class="avatar">HS</div>
+        <div>
+          <div class="chip-name">Harmit Suthar</div>
+          <div class="chip-id">23084231044</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <span class="eyebrow">Practical 11 · Authentication</span>
+      <h1>Blog System · JWT &amp; RBAC</h1>
+      <p>Sign in as a role to receive a JWT, then test which actions the role-based access guard permits.</p>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <span class="label">Sign in as</span>
+        <button class="btn secondary" onclick="login('reader')">Reader · read only</button>
+        <button class="btn success" onclick="login('author')">Author · can publish</button>
+        <button class="btn violet" onclick="login('admin')">Admin · full control</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn danger" onclick="publish()">Publish article (test RBAC guard)</button>
+        <button class="btn secondary" onclick="getPosts()">Get all articles</button>
+      </div>
+      <div class="output-head"><span class="label">Response</span><span class="status-pill" id="status">Idle</span></div>
+        <pre class="output" id="output">Select a role to generate a JWT and test authorisation…</pre>
+    </div>
+    <p class="footer">Harmit Suthar (23084231044) · Practical 11</p>
+  </main>
+  <script>
+    const out = document.getElementById('output');
+    const statusEl = document.getElementById('status');
+    function show(res, json) {
+      statusEl.textContent = res ? res.status + ' ' + (res.statusText || (res.ok ? 'OK' : 'Error')) : 'Done';
+      statusEl.className = 'status-pill ' + (!res ? '' : res.ok ? 'ok' : res.status >= 500 ? 'warn' : 'err');
+      out.textContent = JSON.stringify(json, null, 2);
+    }
+    let currentToken = "";
+    async function login(role) {
+      const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: "Harmit Suthar", role }) });
+      const json = await res.json();
+      currentToken = json.token;
+      show(res, { signedInAs: role.toUpperCase(), token: currentToken });
+    }
+    async function publish() {
+      if (!currentToken) { statusEl.textContent = 'Sign in first'; statusEl.className = 'status-pill warn'; out.textContent = 'Please sign in with a role before publishing.'; return; }
+      const res = await fetch('/api/posts', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken}, body: JSON.stringify({ title: "Enterprise Microservices Deployment", content: "Details..." }) });
+      show(res, await res.json());
+    }
+    async function getPosts() {
+      const res = await fetch('/api/posts');
+      show(res, await res.json());
+    }
+    getPosts();
+  </script>
+</body>
+</html>

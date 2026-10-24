@@ -1,0 +1,13 @@
+{
+  "name": "practical-10-complete-full-stack-mern-integration",
+  "version": "1.0.0",
+  "description": "Develop a complete MERN application integrating React Frontend, Express Backend and MongoDB Database",
+  "main": "backend/server.js",
+  "scripts": {
+    "setup": "npm --prefix backend install && npm --prefix frontend install",
+    "start": "npm --prefix backend start",
+    "dev": "npm run setup && (npm --prefix backend start & npm --prefix frontend run dev; wait)"
+  },
+  "author": "MSD Student",
+  "license": "MIT"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "practical-12-real-time-chat-with-socket-io-websockets",
+  "version": "1.0.0",
+  "description": "Develop a Real-Time Chat Application using Socket.IO, React and Node.js",
+  "main": "server/server.js",
+  "scripts": {
+    "setup": "npm --prefix server install && npm --prefix client install",
+    "start": "npm --prefix server start",
+    "dev": "npm run setup && (npm --prefix server start & npm --prefix client run dev; wait)"
+  },
+  "author": "MSD Student",
+  "license": "MIT"
+}

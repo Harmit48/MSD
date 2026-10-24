@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 05 · Express Routing & CRUD API</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">P05</div>
+        <div>
+          <div class="brand-title">MERN Stack Development</div>
+          <div class="brand-sub">Ganpat University · M.Sc [CA &amp; IT]</div>
+        </div>
+      </div>
+      <div class="student-chip">
+        <div class="avatar">HS</div>
+        <div>
+          <div class="chip-name">Harmit Suthar</div>
+          <div class="chip-id">23084231044</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <span class="eyebrow">Practical 05 · Express.js</span>
+      <h1>Express Routing & CRUD API</h1>
+      <p>Exercise the REST endpoints for the item catalogue and inspect each JSON response.</p>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="btn secondary" onclick="fetchItems()">GET /api/items</button>
+        <input type="text" id="newName" placeholder="Item name" value="Sony WH-1000XM5" aria-label="Item name">
+        <input type="number" id="newPrice" placeholder="Price" value="26990" aria-label="Price">
+        <button class="btn success" onclick="addItem()">POST /api/items</button>
+      </div>
+      <div class="output-head"><span class="label">Response</span><span class="status-pill" id="status">Idle</span></div>
+        <pre class="output" id="output">// Run a request to see the response…</pre>
+    </div>
+    <p class="footer">Harmit Suthar (23084231044) · Practical 05</p>
+  </main>
+  <script>
+    const out = document.getElementById('output');
+    const statusEl = document.getElementById('status');
+    function show(res, json) {
+      statusEl.textContent = res ? res.status + ' ' + (res.statusText || (res.ok ? 'OK' : 'Error')) : 'Done';
+      statusEl.className = 'status-pill ' + (!res ? '' : res.ok ? 'ok' : res.status >= 500 ? 'warn' : 'err');
+      out.textContent = JSON.stringify(json, null, 2);
+    }
+    async function fetchItems() {
+      const res = await fetch('/api/items');
+      show(res, await res.json());
+    }
+    async function addItem() {
+      const name = document.getElementById('newName').value;
+      const price = document.getElementById('newPrice').value;
+      const res = await fetch('/api/items', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name, price, category: 'Electronics'}) });
+      show(res, await res.json());
+    }
+    fetchItems();
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 08 · Express Middleware Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">P08</div>
+        <div>
+          <div class="brand-title">MERN Stack Development</div>
+          <div class="brand-sub">Ganpat University · M.Sc [CA &amp; IT]</div>
+        </div>
+      </div>
+      <div class="student-chip">
+        <div class="avatar">HS</div>
+        <div>
+          <div class="chip-name">Harmit Suthar</div>
+          <div class="chip-id">23084231044</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <span class="eyebrow">Practical 08 · Middleware</span>
+      <h1>Express Middleware Pipeline</h1>
+      <p>Walk a request through logging, API-key authentication and centralised error handling.</p>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="btn secondary" onclick="test('/api/public/status')">1 · Public route</button>
+        <button class="btn danger" onclick="test('/api/secure/profile')">2 · Secure, no token (401)</button>
+        <button class="btn success" onclick="testAuth('/api/secure/profile')">3 · Secure, valid token (200)</button>
+        <button class="btn warning" onclick="test('/api/simulate-error')">4 · Trigger 503</button>
+      </div>
+      <div class="output-head"><span class="label">Response</span><span class="status-pill" id="status">Idle</span></div>
+        <pre class="output" id="output">Choose a scenario to trace the middleware chain…</pre>
+    </div>
+    <p class="footer">Harmit Suthar (23084231044) · Practical 08</p>
+  </main>
+  <script>
+    const out = document.getElementById('output');
+    const statusEl = document.getElementById('status');
+    function show(res, json) {
+      statusEl.textContent = res ? res.status + ' ' + (res.statusText || (res.ok ? 'OK' : 'Error')) : 'Done';
+      statusEl.className = 'status-pill ' + (!res ? '' : res.ok ? 'ok' : res.status >= 500 ? 'warn' : 'err');
+      out.textContent = JSON.stringify(json, null, 2);
+    }
+    async function test(url) {
+      const res = await fetch(url);
+      show(res, await res.json());
+    }
+    async function testAuth(url) {
+      const res = await fetch(url, { headers: { 'x-api-key': 'MSD_SECURE_TOKEN_2026' } });
+      show(res, await res.json());
+    }
+  </script>
+</body>
+</html>

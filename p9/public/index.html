@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 09 · File Upload &amp; Metadata Storage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">P09</div>
+        <div>
+          <div class="brand-title">MERN Stack Development</div>
+          <div class="brand-sub">Ganpat University · M.Sc [CA &amp; IT]</div>
+        </div>
+      </div>
+      <div class="student-chip">
+        <div class="avatar">HS</div>
+        <div>
+          <div class="chip-name">Harmit Suthar</div>
+          <div class="chip-id">23084231044</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <span class="eyebrow">Practical 09 · Multer</span>
+      <h1>File Upload &amp; Metadata Storage</h1>
+      <p>Upload a file (max 5MB) to Express storage and review the metadata persisted to MongoDB.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Upload a document</div>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" required>
+        <div class="toolbar" style="margin-top:12px"><button type="submit" class="btn">Upload to server</button></div>
+      </form>
+      <div class="output-head"><span class="label">Server response</span><span class="status-pill" id="status">Idle</span></div>
+      <pre class="output" id="result" style="max-height:200px">Ready for upload. Select a file above…</pre>
+    </div>
+    <div class="card">
+      <div class="card-title">Uploaded documents <span class="muted" style="font-weight:400;font-size:.8rem">MongoDB metadata</span></div>
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>File name</th><th>MIME type</th><th>Size</th><th>Uploaded by</th><th>Download</th></tr></thead>
+        <tbody id="filesBody"><tr><td colspan="5" class="muted" style="text-align:center">Loading documents…</td></tr></tbody>
+      </table>
+      </div>
+    </div>
+    <p class="footer">Harmit Suthar (23084231044) · Practical 09</p>
+  </main>
+  <script>
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const statusEl = document.getElementById('status');
+    const result = document.getElementById('result');
+    async function loadFiles() {
+      try {
+        const res = await fetch('/api/upload/files');
+        const data = await res.json();
+        const tbody = document.getElementById('filesBody');
+        if (!data.files || data.files.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center">No files uploaded yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.files.map(f => `
+          <tr>
+            <td><strong>${esc(f.originalName)}</strong></td>
+            <td><span class="badge">${esc(f.mimeType)}</span></td>
+            <td>${(f.sizeBytes / 1024).toFixed(1)} KB</td>
+            <td>${esc(f.uploader || 'Harmit Suthar')}</td>
+            <td><a class="link" href="${esc(f.downloadUrl)}" target="_blank" rel="noopener">Download</a></td>
+          </tr>`).join('');
+      } catch (err) { console.error(err); }
+    }
+    document.getElementById('uploadForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('uploader', 'Harmit Suthar (23084231044)');
+      statusEl.textContent = 'Uploading…'; statusEl.className = 'status-pill';
+      result.textContent = 'Uploading file…';
+      try {
+        const res = await fetch('/api/upload/single', { method: 'POST', body: formData });
+        const json = await res.json();
+        statusEl.textContent = res.status + ' ' + (res.ok ? 'OK' : 'Error'); statusEl.className = 'status-pill ' + (res.ok ? 'ok' : 'err');
+        result.textContent = JSON.stringify(json, null, 2);
+        loadFiles();
+      } catch (err) {
+        statusEl.textContent = 'Failed'; statusEl.className = 'status-pill err';
+        result.textContent = 'Error: ' + err.message;
+      }
+    };
+    loadFiles();
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "practical-13-mini-project-enterprise-document-management-system-docuvault-",
+  "version": "1.0.0",
+  "description": "Mini Project: Design and develop a full-stack industry-oriented MERN application (Document Management System)",
+  "main": "server/server.js",
+  "scripts": {
+    "setup": "npm --prefix server install && npm --prefix client install",
+    "start": "npm --prefix server start",
+    "dev": "npm run setup && (npm --prefix server start & npm --prefix client run dev; wait)"
+  },
+  "author": "MSD Student",
+  "license": "MIT"
+}
